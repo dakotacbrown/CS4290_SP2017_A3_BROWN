@@ -1,6 +1,7 @@
 import pygame, sys, os, time, math, re
 from pygame.locals import *
 from sys import exit
+from random import randint
 pygame.init()
 
 sys.setrecursionlimit(10000)
@@ -27,6 +28,12 @@ lightRulesButton = pygame.image.load("img/lightRulesButton.png")
 exitButton = pygame.image.load("img/exitButton.png")
 lightExitButton = pygame.image.load("img/lightExitButton.png")
 fileArray = []
+
+#line objects
+xPos = 0
+amplitude = 100 # how many pixels tall the waves with rise/fall.
+yPosSquare = amplitude # starting position
+random = randint(0,2)
 
 #loop objects
 running = True
@@ -81,7 +88,50 @@ def Quit():
 def Exit():
     pygame.quit()
     sys.exit()
+    
+def randomWaves(canvas_width, canvas_height, centerY, blue, posRecord):
+    global xPos, amplitude, yPosSquare, random
 
+    #the thickness of the line
+    for x, y in posRecord['square']:
+        pygame.draw.circle(screen, blue, (x, y), 2)
+    
+    if random == 0:
+        posRecord['square'].append((int(xPos), int(yPosSquare*(1/4)) + (centerY-25)))
+    elif random == 1:
+        posRecord['square'].append((int(xPos), int(yPosSquare*(1/2)) + (centerY-25)))
+    else:
+        posRecord['square'].append((int(xPos), int(yPosSquare) + (centerY-25)))
+            
+    #speed of the line
+    xPos += 1
+
+    #if the line reaches the end of the screen, it restarts
+    #else it creates the movement of the line
+    if xPos > canvas_width:
+        xPos = 0
+        yPosSquare = amplitude
+        posRecord['square'] = []
+    else:
+        #jumps occur every 20 pixels/this is the base case
+        if xPos % 20 == 0:
+            yPosSquare *= -1
+            # add vertical line
+            if random == 0:
+                for x in range(-amplitude, amplitude):
+                    posRecord['square'].append( (int(xPos), (int(x*(1/4)) + (centerY-25))) )
+            elif random == 1:
+                for x in range(-amplitude, amplitude):
+                    posRecord['square'].append( (int(xPos), (int(x*(1/2)) + (centerY-25))) )
+            else:
+                for x in range(-amplitude, amplitude):
+                    posRecord['square'].append( (int(xPos), (int(x) + (centerY-25))) )
+
+            random = randint(0,2)
+            print(random)
+                    
+                
+    
 #Used for displaying text on screen
 def text_objects(text, font, color):
     textSurface = font.render(text, True, color)
@@ -93,7 +143,6 @@ def ProgramIntro():
     pygame.display.set_caption("Assignment #3")
     running = False
     intro = True
-    results = False
     instruct = False
     background = introBG
     button1 = Button(startButton, lightStartButton, 50, 300, ProgramLoop)
@@ -120,7 +169,6 @@ def Instructions():
     pygame.display.set_caption("Assignment #3")
     running = False
     intro = False
-    results = False
     instruct = True
     background = rulesBG
     button1 = Button(mainButton, lightMainButton, 50, 400, ProgramIntro)
@@ -140,23 +188,21 @@ def Instructions():
 
 #loop that runs the the program
 def ProgramLoop():
-    global running, intro, results, instruct
+    global running, intro, results, instruct, xPos
     white = pygame.Color(255, 255, 255, 255)
     running = True
     intro = False
     results = False
     instruct = False
     gameOver = False
-    blue = (0,0,255) # color of the wave
+    clock = pygame.time.Clock()
     canvas_width = 800
     canvas_height = 480
     centerY = int(canvas_height/2)
+    blue = (0,0,255) # color of the wave
     FPS = 160
-    amplitude = 80 # how many pixels tall the waves with rise/fall.
-    clock = pygame.time.Clock()
     xPos = 0
-    posRecord = {'square': []} # keeps track of the positions for drawing the waves
-    yPosSquare = amplitude # starting position
+    posRecord = {'square': []}
     button1 = Button(mainButton, lightMainButton, 50, 400, ProgramIntro)
     button2 = Button(rulesButton, lightRulesButton, 350, 400, Instructions)
     button3 = Button(exitButton, lightExitButton, 650, 400, Exit)
@@ -166,7 +212,7 @@ def ProgramLoop():
     #program loop
     while running:
         Quit()
-        
+
         #display of frames
         clock.tick(FPS)
         text = "FPS: {0:.2f}".format(clock.get_fps())
@@ -178,28 +224,7 @@ def ProgramLoop():
         button2.update()
         button3.update()
         allSprites.draw(screen)
-
-        #the thickness of the line
-        posRecord['square'].append((int(xPos), int(yPosSquare) + (centerY-100)))
-        for x, y in posRecord['square']:
-            pygame.draw.circle(screen, blue, (x, y), 2)
-            
-        #speed of the line
-        xPos += 1
-
-        #if the line reaches the end of the screen, it restarts
-        #else it creates the movement of the line
-        if xPos > canvas_width:
-            xPos = 0
-            yPosSquare = amplitude
-            posRecord['square'] = []
-        else:
-            #jumps occur every 20 pixels/ this is the base case
-            if xPos % 20 == 0:
-                yPosSquare *= -1
-                # add vertical line
-                for x in range(-amplitude, amplitude):
-                    posRecord['square'].append((int(xPos), int(x) + (centerY-100)))
+        randomWaves(canvas_width, canvas_height, centerY, blue, posRecord)
 
         pygame.display.update()
 
