@@ -1,7 +1,6 @@
 import pygame, sys, os, time, math, re
 from pygame.locals import *
 from sys import exit
-from random import randint
 pygame.init()
 
 sys.setrecursionlimit(10000)
@@ -13,12 +12,11 @@ back = pygame.Surface((800,480))
 background = back.convert()
 pygame.display.set_caption("Assignment #3")
 
-#font objects
+#font objects if needed for later implementation
 #smallText = pygame.font.Font("font/gameplay.ttf", 25)
 
 #program mechanics
 introBG = pygame.image.load("img/introBG.png")
-mainBG = pygame.image.load("img/mainBG.png")
 rulesBG = pygame.image.load("img/rulesBG.png")
 mainButton = pygame.image.load("img/mainButton.png")
 lightMainButton = pygame.image.load("img/lightMainButton.png")
@@ -29,7 +27,6 @@ lightRulesButton = pygame.image.load("img/lightRulesButton.png")
 exitButton = pygame.image.load("img/exitButton.png")
 lightExitButton = pygame.image.load("img/lightExitButton.png")
 fileArray = []
-nameArray = []
 
 #loop objects
 running = True
@@ -37,29 +34,20 @@ intro = True
 results = True
 instruct = True
 
+#re needs to be fixed
 def FileIO(fileName):
     file = open(fileName)
     contents = file.readlines()
     file.close()
     for content in contents:
-        num = re.search('\d+', content)
-        name = re.search('\w+', content)
-        fileArray.append(num.group(0))
-        nameArray.append(name.group(0))
-
-def check_float(arg):
-    try:
-        float(arg)
-    except:
-        print (arg,"is no float")
-        return False
-    return True
+        binary = re.search('\d+', content)
+        fileArray.append(binary.group(0))
 
 #Class for the button
 class Button(pygame.sprite.Sprite):
     """moves a sprite on the screen, following the mouse"""
     def __init__(self, inactive, active, x, y, action=None):
-        pygame.sprite.Sprite.__init__(self) #call Sprite initializer
+        pygame.sprite.Sprite.__init__(self)
         self.inactive = inactive
         self.active = active
         self.image = inactive
@@ -83,11 +71,6 @@ class Button(pygame.sprite.Sprite):
             self.image = self.inactive
             self.rect = (self.x, self.y, self.image.get_width(), self.image.get_height())
 
-#Updates the game time
-def Update(clock):
-    text = "FPS: {0:.2f}".format(clock.get_fps())
-    pygame.display.set_caption(text)
-
 #Quit and Exit are used for quiting the game
 def Quit():
     for event in pygame.event.get():
@@ -107,7 +90,6 @@ def text_objects(text, font, color):
 #Screen user is greeted with
 def ProgramIntro():
     global running, intro, results, instruct, introBG
-
     pygame.display.set_caption("Assignment #3")
     running = False
     intro = True
@@ -158,14 +140,23 @@ def Instructions():
 
 #loop that runs the the program
 def ProgramLoop():
-    global running, intro, results, instruct, mainBG
+    global running, intro, results, instruct
+    white = pygame.Color(255, 255, 255, 255)
     running = True
     intro = False
     results = False
     instruct = False
     gameOver = False
-    Clock = pygame.time.Clock()
-    background = mainBG
+    blue = (0,0,255) # color of the wave
+    canvas_width = 800
+    canvas_height = 480
+    centerY = int(canvas_height/2)
+    FPS = 160
+    amplitude = 80 # how many pixels tall the waves with rise/fall.
+    clock = pygame.time.Clock()
+    xPos = 0
+    posRecord = {'square': []} # keeps track of the positions for drawing the waves
+    yPosSquare = amplitude # starting position
     button1 = Button(mainButton, lightMainButton, 50, 400, ProgramIntro)
     button2 = Button(rulesButton, lightRulesButton, 350, 400, Instructions)
     button3 = Button(exitButton, lightExitButton, 650, 400, Exit)
@@ -175,14 +166,40 @@ def ProgramLoop():
     #program loop
     while running:
         Quit()
+        
+        #display of frames
+        clock.tick(FPS)
+        text = "FPS: {0:.2f}".format(clock.get_fps())
+        pygame.display.set_caption(text)
 
-        Update(Clock)
-        screen.blit(background, (0, 0))
+        screen.fill(white)
         
         button1.update()
         button2.update()
         button3.update()
         allSprites.draw(screen)
+
+        #the thickness of the line
+        posRecord['square'].append((int(xPos), int(yPosSquare) + (centerY-100)))
+        for x, y in posRecord['square']:
+            pygame.draw.circle(screen, blue, (x, y), 2)
+            
+        #speed of the line
+        xPos += 1
+
+        #if the line reaches the end of the screen, it restarts
+        #else it creates the movement of the line
+        if xPos > canvas_width:
+            xPos = 0
+            yPosSquare = amplitude
+            posRecord['square'] = []
+        else:
+            #jumps occur every 20 pixels/ this is the base case
+            if xPos % 20 == 0:
+                yPosSquare *= -1
+                # add vertical line
+                for x in range(-amplitude, amplitude):
+                    posRecord['square'].append((int(xPos), int(x) + (centerY-100)))
 
         pygame.display.update()
 
