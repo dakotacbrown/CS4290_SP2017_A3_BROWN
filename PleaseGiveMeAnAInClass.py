@@ -28,6 +28,7 @@ lightRulesButton = pygame.image.load("img/lightRulesButton.png")
 exitButton = pygame.image.load("img/exitButton.png")
 lightExitButton = pygame.image.load("img/lightExitButton.png")
 txtbx = "01001100011"
+asciiArray = []
 fileArray = []
 
 #line objects
@@ -118,17 +119,17 @@ def randomWaves(canvas_width, canvas_height, centerY, blue, posRecord):
 
 
 def NRZL():
-    global txtbx
+    global txtbx, asciiArray
     txtarr = list(txtbx)
-    asciiArray = []
+    asciiArray = list(txtbx)
 
-    for i in txtarr:
-        if i == "0":
-            asciiArray.append("+")
-        elif i == "1":
-            asciiArray.append("-")
+    for i, j in enumerate(txtarr):
+        if j == "0":
+            asciiArray[i] = "+"
+        elif j == "1":
+            asciiArray[i] = "-"
         else:
-            asciiArray.append("x")
+            asciiArray[i] = "x"
 
     txtSurf, txtRect = text_objects(','.join(asciiArray), smallText, (0,0,255))
     txtRect.center = ((400),(360))
@@ -136,7 +137,7 @@ def NRZL():
     
                 
 def NRZI():
-    global txtbx
+    global txtbx, asciiArray
     txtarr = list(txtbx)
     asciiArray = list(txtbx)
 
@@ -187,7 +188,7 @@ def NRZI():
     screen.blit(txtSurf, txtRect)
 
 def BAMI():
-    global txtbx
+    global txtbx, asciiArray
     txtarr = list(txtbx)
     asciiArray = list(txtbx)
     last = -1
@@ -214,6 +215,7 @@ def BAMI():
                 asciiArray[x] = "_"
             elif txtarr[x] == "1":
                 asciiArray[x] = "+"
+                last = x
             else:
                 asciiArray[x] = "x"
 
@@ -221,7 +223,42 @@ def BAMI():
     txtRect.center = ((400),(360))
     screen.blit(txtSurf, txtRect)
     
-#def PDTY():
+def PDTY():
+    global txtbx, asciiArray
+    txtarr = list(txtbx)
+    asciiArray = list(txtbx)
+    last = -1
+
+    for x, (i, j) in enumerate(zip(txtarr, asciiArray)):
+        if x > 0:
+            if txtarr[x] == "1":
+                asciiArray[x] = "_"
+            elif txtarr[x] == "0" and last == -1:
+                asciiArray[x] = "+"
+                last = x
+            elif txtarr[x] == "0" and last > -1:
+                if asciiArray[last] == "+":
+                    asciiArray[x] = "-"
+                elif asciiArray[last] == "-":
+                    asciiArray[x] = "+"
+                else:
+                    asciiArray[x] = "x"
+                last = x
+            else:
+                asciiArray[x] = "x"
+        else:
+            if txtarr[x] == "1":
+                asciiArray[x] = "_"
+            elif txtarr[x] == "0":
+                asciiArray[x] = "+"
+                last = x
+            else:
+                asciiArray[x] = "x"
+
+    txtSurf, txtRect = text_objects(','.join(asciiArray), smallText, (0,0,255))
+    txtRect.center = ((400),(360))
+    screen.blit(txtSurf, txtRect)
+    
 #def MCHR():
 #def DMHR():
 #def B8ZS():
@@ -331,10 +368,8 @@ def ProgramLoop():
         button3.update()
         allSprites.draw(screen)
         randomWaves(canvas_width, canvas_height, centerY, blue, posRecord)
-        BAMI()
+        NRZL()
         
-
-
         pygame.display.update()
 
     
