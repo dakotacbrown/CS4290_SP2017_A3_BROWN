@@ -131,7 +131,7 @@ def NRZL():
         else:
             asciiArray[i] = "x"
 
-    txtSurf, txtRect = text_objects(','.join(asciiArray), smallText, (0,0,255))
+    txtSurf, txtRect = text_objects(' | '.join(asciiArray), smallText, (0,0,255))
     txtRect.center = ((400),(360))
     screen.blit(txtSurf, txtRect)
     
@@ -183,7 +183,7 @@ def NRZI():
             else:
                 asciiArray[x] = "x"
 
-    txtSurf, txtRect = text_objects(','.join(asciiArray), smallText, (0,0,255))
+    txtSurf, txtRect = text_objects(' | '.join(asciiArray), smallText, (0,0,255))
     txtRect.center = ((400),(360))
     screen.blit(txtSurf, txtRect)
 
@@ -219,7 +219,7 @@ def BAMI():
             else:
                 asciiArray[x] = "x"
 
-    txtSurf, txtRect = text_objects(','.join(asciiArray), smallText, (0,0,255))
+    txtSurf, txtRect = text_objects(' | '.join(asciiArray), smallText, (0,0,255))
     txtRect.center = ((400),(360))
     screen.blit(txtSurf, txtRect)
     
@@ -255,12 +255,72 @@ def PDTY():
             else:
                 asciiArray[x] = "x"
 
-    txtSurf, txtRect = text_objects(','.join(asciiArray), smallText, (0,0,255))
+    txtSurf, txtRect = text_objects(' | '.join(asciiArray), smallText, (0,0,255))
     txtRect.center = ((400),(360))
     screen.blit(txtSurf, txtRect)
     
-#def MCHR():
-#def DMHR():
+def MCHR():
+    global txtbx, asciiArray
+    txtarr = list(txtbx)
+    asciiArray = list(txtbx)
+
+    for x, (i, j) in enumerate(zip(txtarr, asciiArray)):
+        if txtarr[x] == "0":
+            asciiArray[x] = "+ -"
+        elif txtarr[x] == "1":
+            asciiArray[x] = "- +"
+        else:
+            asciiArray[x] = "x"
+
+    txtSurf, txtRect = text_objects(' | '.join(asciiArray), smallText, (0,0,255))
+    txtRect.center = ((400),(360))
+    screen.blit(txtSurf, txtRect)
+    
+def DMHR():
+    global txtbx, asciiArray
+    txtarr = list(txtbx)
+    asciiArray = list(txtbx)
+    last = -1
+
+    for x, (i, j) in enumerate(zip(txtarr, asciiArray)):
+        if x > 0:
+            if txtarr[x] == "0" and asciiArray[x-1] == "+ - +":
+                asciiArray[x] = "- +"
+            elif txtarr[x] == "1" and asciiArray[x-1] == "+ - +":
+                asciiArray[x] = "+ -"
+            elif txtarr[x] == "0" and asciiArray[x-1] == "- +":
+                asciiArray[x] = "- +"
+            elif txtarr[x] == "0" and asciiArray[x-1] == "+ -":
+                asciiArray[x] = "+ -"
+            elif txtarr[x] == "1" and asciiArray[x-1] == "- +" and last == -1:
+                asciiArray[x] = "+ -"
+                last = x
+            elif txtarr[x] == "1" and asciiArray[x-1] == "+ -" and last == -1:
+                asciiArray[x] = "- +"
+                last = x
+            elif txtarr[x] == "1" and asciiArray[x-1] == "- +" and last > -1:
+                asciiArray[x] = "+ -"
+                last = x
+            elif txtarr[x] == "1" and asciiArray[x-1] == "+ -" and last > -1:
+                asciiArray[x] = "- +"
+                last = x
+            else:
+                asciiArray[x] = "x"
+        elif x == 0:
+            if txtarr[x] == "0" or txtarr[x] == "1":
+                asciiArray[x] = "+ - +"
+            else:
+                asciiArray[x] = "x"
+            
+        else:
+            asciiArray[x] = "x"
+
+
+
+    txtSurf, txtRect = text_objects(' | '.join(asciiArray), smallText, (0,0,255))
+    txtRect.center = ((400),(360))
+    screen.blit(txtSurf, txtRect)
+    
 #def B8ZS():
 #def HDB3():
                 
@@ -368,7 +428,7 @@ def ProgramLoop():
         button3.update()
         allSprites.draw(screen)
         randomWaves(canvas_width, canvas_height, centerY, blue, posRecord)
-        NRZL()
+        DMHR()
         
         pygame.display.update()
 
