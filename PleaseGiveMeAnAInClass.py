@@ -1,4 +1,4 @@
-import pygame, sys, os, time, math, re, eztext, itertools
+import pygame, sys, os, time, math, re, eztext
 from pygame.locals import *
 from sys import exit
 from random import randint
@@ -186,7 +186,41 @@ def NRZI():
     txtRect.center = ((400),(360))
     screen.blit(txtSurf, txtRect)
 
-#def BAMI():
+def BAMI():
+    global txtbx
+    txtarr = list(txtbx)
+    asciiArray = list(txtbx)
+    last = -1
+
+    for x, (i, j) in enumerate(zip(txtarr, asciiArray)):
+        if x > 0:
+            if txtarr[x] == "0":
+                asciiArray[x] = "_"
+            elif txtarr[x] == "1" and last == -1:
+                asciiArray[x] = "+"
+                last = x
+            elif txtarr[x] == "1" and last > -1:
+                if asciiArray[last] == "+":
+                    asciiArray[x] = "-"
+                elif asciiArray[last] == "-":
+                    asciiArray[x] = "+"
+                else:
+                    asciiArray[x] = "x"
+                last = x
+            else:
+                asciiArray[x] = "x"
+        else:
+            if txtarr[x] == "0":
+                asciiArray[x] = "_"
+            elif txtarr[x] == "1":
+                asciiArray[x] = "+"
+            else:
+                asciiArray[x] = "x"
+
+    txtSurf, txtRect = text_objects(','.join(asciiArray), smallText, (0,0,255))
+    txtRect.center = ((400),(360))
+    screen.blit(txtSurf, txtRect)
+    
 #def PDTY():
 #def MCHR():
 #def DMHR():
@@ -297,7 +331,7 @@ def ProgramLoop():
         button3.update()
         allSprites.draw(screen)
         randomWaves(canvas_width, canvas_height, centerY, blue, posRecord)
-        NRZI()
+        BAMI()
         
 
 
