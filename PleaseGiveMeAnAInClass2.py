@@ -1,4 +1,4 @@
-import pygame, sys, os, time, math, re, eztext, itertools
+import pygame, sys, os, time, math, re
 from pygame.locals import *
 from sys import exit
 from random import randint
@@ -13,8 +13,8 @@ back = pygame.Surface((800,480))
 background = back.convert()
 pygame.display.set_caption("Assignment #3")
 
-#font objects
-smallText = pygame.font.Font("font/gameplay.ttf", 25)
+#font objects if needed for later implementation
+#smallText = pygame.font.Font("font/gameplay.ttf", 25)
 
 #program mechanics
 introBG = pygame.image.load("img/introBG.png")
@@ -27,21 +27,14 @@ rulesButton = pygame.image.load("img/rulesButton.png")
 lightRulesButton = pygame.image.load("img/lightRulesButton.png")
 exitButton = pygame.image.load("img/exitButton.png")
 lightExitButton = pygame.image.load("img/lightExitButton.png")
-txtbx = "01001100011"
 fileArray = []
-
-#line objects
-xPos = 0
-amplitude = 100 # how many pixels tall the waves with rise/fall.
-yPosSquare = amplitude # starting position
-random = randint(0,2)
 
 #loop objects
 running = True
 intro = True
 results = True
 instruct = True
-    
+
 #re needs to be fixed
 def FileIO(fileName):
     file = open(fileName)
@@ -89,111 +82,14 @@ def Quit():
 def Exit():
     pygame.quit()
     sys.exit()
+
+def randomNumber():
+    random = randint(0,2)
+    return random
     
-def randomWaves(canvas_width, canvas_height, centerY, blue, posRecord):
-    global xPos, amplitude, yPosSquare, random
-
-    #the thickness of the line
-    for x, y in posRecord['square']:
-        pygame.draw.circle(screen, blue, (x, y), 2)
-
-    posRecord['square'].append((int(xPos), int((yPosSquare*(1/4))*4) + (centerY)))
-            
-    #speed of the line
-    xPos += 1
-
-    #if the line reaches the end of the screen, it restarts
-    #else it creates the movement of the line
-    if xPos > canvas_width:
-        xPos = 0
-        yPosSquare = amplitude
-        posRecord['square'] = []
-    else:
-        #jumps occur every 20 pixels/this is the base case
-        if xPos % 20 == 0:
-            yPosSquare *= -1
-            # add vertical line
-            for x in range(-amplitude, amplitude):
-                posRecord['square'].append((int(xPos), int((x*(1/4))*4) + (centerY)))
 
 
-def NRZL():
-    global txtbx
-    txtarr = list(txtbx)
-    asciiArray = []
 
-    for i in txtarr:
-        if i == "0":
-            asciiArray.append("+")
-        elif i == "1":
-            asciiArray.append("-")
-        else:
-            asciiArray.append("x")
-
-    txtSurf, txtRect = text_objects(','.join(asciiArray), smallText, (0,0,255))
-    txtRect.center = ((400),(360))
-    screen.blit(txtSurf, txtRect)
-    
-                
-def NRZI():
-    global txtbx
-    txtarr = list(txtbx)
-    asciiArray = list(txtbx)
-
-    for x, (i, j) in enumerate(zip(txtarr, asciiArray)):
-        if x > 0:
-            if txtarr[x] == "0":
-                if txtarr[x-1] == "1" and txtarr[x-2] == "1" and asciiArray[x-1] == "+":
-                    asciiArray[x] = "+"
-                elif txtarr[x-1] == "1" and txtarr[x-2] == "1" and asciiArray[x-1] == "-":
-                    asciiArray[x] = "-"
-                elif txtarr[x-1] == "1" and txtarr[x-2] == "0" and asciiArray[x-1] == "+":
-                    asciiArray[x] = "+"
-                elif txtarr[x-1] == "1" and txtarr[x-2] == "0" and asciiArray[x-1] == "-":
-                    asciiArray[x] = "-"
-                elif txtarr[x-1] == "0" and asciiArray[x-1] == "+":
-                    asciiArray[x] = "+"
-                elif txtarr[x-1] == "0" and asciiArray[x-1] == "-":
-                    asciiArray[x] = "-"
-                else:
-                    asciiArray[x] = "x"
-            elif txtarr[x] == "1":
-                if txtarr[x-1] == "1" and txtarr[x-2] == "1" and asciiArray[x-1] == "+":
-                    asciiArray[x] = "-"
-                elif txtarr[x-1] == "1" and txtarr[x-2] == "1" and asciiArray[x-1] == "-":
-                    asciiArray[x] = "+"
-                elif txtarr[x-1] == "1" and txtarr[x-2] == "0" and asciiArray[x-1] == "+":
-                    asciiArray[x] = "-"
-                elif txtarr[x-1] == "1" and txtarr[x-2] == "0" and asciiArray[x-1] == "-":
-                    asciiArray[x] = "+"
-                elif txtarr[x-1] == "0" and asciiArray[x-1] == "-":
-                    asciiArray[x] = "+"
-                elif txtarr[x-1] == "0" and asciiArray[x-1] == "+":
-                    asciiArray[x] = "-"
-                else:
-                    asciiArray[x] = "x"                   
-            else:
-                asciiArray[x] = "x"
-        else:
-            if txtarr[x] == "0":
-                asciiArray[x] = "+"
-            elif txtarr[x] == "1":
-                asciiArray[x] = "-"
-            else:
-                asciiArray[x] = "x"
-
-    txtSurf, txtRect = text_objects(','.join(asciiArray), smallText, (0,0,255))
-    txtRect.center = ((400),(360))
-    screen.blit(txtSurf, txtRect)
-
-#def BAMI():
-#def PDTY():
-#def MCHR():
-#def DMHR():
-#def B8ZS():
-#def HDB3():
-                
-    
 #Used for displaying text on screen
 def text_objects(text, font, color):
     textSurface = font.render(text, True, color)
@@ -205,6 +101,7 @@ def ProgramIntro():
     pygame.display.set_caption("Assignment #3")
     running = False
     intro = True
+    results = False
     instruct = False
     background = introBG
     button1 = Button(startButton, lightStartButton, 50, 300, ProgramLoop)
@@ -231,6 +128,7 @@ def Instructions():
     pygame.display.set_caption("Assignment #3")
     running = False
     intro = False
+    results = False
     instruct = True
     background = rulesBG
     button1 = Button(mainButton, lightMainButton, 50, 400, ProgramIntro)
@@ -250,36 +148,29 @@ def Instructions():
 
 #loop that runs the the program
 def ProgramLoop():
-    global running, intro, results, instruct, xPos
+    global running, intro, results, instruct
     white = pygame.Color(255, 255, 255, 255)
     running = True
     intro = False
     results = False
     instruct = False
     gameOver = False
-    clock = pygame.time.Clock()
+    blue = (0,0,255) # color of the wave
     canvas_width = 800
     canvas_height = 480
     centerY = int(canvas_height/2)
-    blue = (0,0,255) # color of the wave
     FPS = 160
+    amplitude = 100 # how many pixels tall the waves with rise/fall.
+    clock = pygame.time.Clock()
     xPos = 0
-    posRecord = {'square': []}
+    random = randomNumber()
+    posRecord = {'square': []} # keeps track of the positions for drawing the waves
+    yPosSquare = amplitude # starting position
     button1 = Button(mainButton, lightMainButton, 50, 400, ProgramIntro)
     button2 = Button(rulesButton, lightRulesButton, 350, 400, Instructions)
     button3 = Button(exitButton, lightExitButton, 650, 400, Exit)
     allSprites = pygame.sprite.Group()
     allSprites.add(button1, button2, button3)
-
-#        deltay=25
-#        ypos = 275
-#        xpos = 50
-#        txtbx = eztext.Input(maxlength=7, color=(79,44,29), x=xpos, y=ypos, prompt="Enter Binary: ")
-#        ypos+=deltay
-#
-#        foci=0 #The focus index
-#        txtbx.focus=True
-#        txtbx.color=(79,44,29)
 
     #program loop
     while running:
@@ -296,10 +187,28 @@ def ProgramLoop():
         button2.update()
         button3.update()
         allSprites.draw(screen)
-        randomWaves(canvas_width, canvas_height, centerY, blue, posRecord)
-        NRZI()
-        
 
+        posRecord['square'].append((int(xPos), int((yPosSquare*(1/4))*4) + (centerY-50)))
+        #the thickness of the line
+        for x, y in posRecord['square']:
+            pygame.draw.circle(screen, blue, (x, y), 2)
+            
+        #speed of the line
+        xPos += 1
+
+        #if the line reaches the end of the screen, it restarts
+        #else it creates the movement of the line
+        if xPos > canvas_width:
+            xPos = 0
+            yPosSquare = amplitude
+            posRecord['square'] = []
+        else:
+            #jumps occur every 20 pixels/this is the base case
+            if xPos % 20 == 0:
+                yPosSquare *= -1
+                # add vertical line
+                for x in range(-amplitude, amplitude):
+                    posRecord['square'].append((int(xPos), int((x*(1/4))*4) + (centerY-50)))
 
         pygame.display.update()
 
