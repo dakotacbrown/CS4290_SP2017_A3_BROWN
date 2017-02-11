@@ -70,14 +70,22 @@ def Change():
     global txtbx, txtbx2
     txtbx = str(txtbx2.get_text())
 
-#re needs to be fixed
+def Change2():
+    global txtbx, fileArray
+    txtbx = ''.join(fileArray)
+    
+
 def FileIO():
+    global fileArray
     file = open("file.txt")
     contents = file.readlines()
     file.close()
     for content in contents:
         binary = re.search('\d+', content)
         fileArray.append(binary.group(0))
+    Change2()
+
+    
 
 #Class for the button
 class Button(pygame.sprite.Sprite):
@@ -166,6 +174,8 @@ def NRZL():
     nameRect.center = ((400),(380))
     screen.blit(nameSurf, nameRect)
 
+    print("NRZL: " + ' | '.join(asciiArray))
+
     
                 
 def NRZI():
@@ -223,6 +233,8 @@ def NRZI():
     nameRect.center = ((400),(380))
     screen.blit(nameSurf, nameRect)
 
+    print("NRZI: " + ' | '.join(asciiArray))
+
 
 def BAMI():
     global txtbx, asciiArray
@@ -264,6 +276,7 @@ def BAMI():
     nameRect.center = ((400),(380))
     screen.blit(nameSurf, nameRect)
 
+    print("Bipolar-AMI: " + ' | '.join(asciiArray))
     
 def PDTY():
     global txtbx, asciiArray
@@ -304,6 +317,8 @@ def PDTY():
     nameSurf, nameRect = text_objects('Pseudoternary', smallText, (0,0,255))
     nameRect.center = ((400),(380))
     screen.blit(nameSurf, nameRect)
+
+    print("Pseudoternary: " + ' | '.join(asciiArray))
     
 def MCHR():
     global txtbx, asciiArray
@@ -325,6 +340,8 @@ def MCHR():
     nameSurf, nameRect = text_objects('Manchester', smallText, (0,0,255))
     nameRect.center = ((400),(380))
     screen.blit(nameSurf, nameRect)
+
+    print("Manchester: " + ' | '.join(asciiArray))
     
 def DMHR():
     global txtbx, asciiArray
@@ -374,6 +391,8 @@ def DMHR():
     nameSurf, nameRect = text_objects('Differential Manchester', smallText, (0,0,255))
     nameRect.center = ((400),(380))
     screen.blit(nameSurf, nameRect)
+
+    print("Differential Manchester: " + ' | '.join(asciiArray))
     
 def B8ZS():
     global txtbx, asciiArray
@@ -414,6 +433,8 @@ def B8ZS():
     nameSurf, nameRect = text_objects('B8ZS', smallText, (0,0,255))
     nameRect.center = ((400),(380))
     screen.blit(nameSurf, nameRect)
+
+    print("B8ZS: " + ' | '.join(asciiArray))
     
 def HDB3():
     global txtbx, asciiArray
@@ -454,6 +475,8 @@ def HDB3():
     nameSurf, nameRect = text_objects('HDB3', smallText, (0,0,255))
     nameRect.center = ((400),(380))
     screen.blit(nameSurf, nameRect)
+
+    print("HBD3: " + ' | '.join(asciiArray))
     
 #Used for displaying text on screen
 def text_objects(text, font, color):
@@ -494,8 +517,8 @@ def Instructions():
     intro = False
     instruct = True
     background = rulesBG
-    button1 = Button(mainButton, lightMainButton, 50, 400, ProgramIntro)
-    button2 = Button(exitButton, lightExitButton, 650, 400, Exit)
+    button1 = Button(mainButton, lightMainButton, 50, 425, ProgramIntro)
+    button2 = Button(exitButton, lightExitButton, 650, 425, Exit)
     allSprites = pygame.sprite.Group()
     allSprites.add(button1, button2)
     while instruct:
