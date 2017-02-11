@@ -125,7 +125,9 @@ def Quit():
 def Exit():
     pygame.quit()
     sys.exit()
-    
+
+#code for the wave output. I used random numbers to test it but I could not
+#completely implement it in time due to personal time restraints.
 def randomWaves(canvas_width, canvas_height, centerY, blue, posRecord):
     global xPos, amplitude, yPosSquare, random
 
@@ -404,27 +406,52 @@ def B8ZS():
         if x > 0:
             if txtarr[x] == "0":
                 asciiArray[x] = "_"
+                start = start + 1
             elif txtarr[x] == "1" and last == -1:
                 asciiArray[x] = "+"
                 last = x
+                start = 0
             elif txtarr[x] == "1" and last > -1:
                 if asciiArray[last] == "+":
                     asciiArray[x] = "-"
+                    start = 0
                 elif asciiArray[last] == "-":
                     asciiArray[x] = "+"
+                    start = 0
                 else:
                     asciiArray[x] = "x"
+                    start = 0
                 last = x
             else:
                 asciiArray[x] = "x"
+                start = 0
         else:
             if txtarr[x] == "0":
                 asciiArray[x] = "_"
+                start = start + 1
             elif txtarr[x] == "1":
                 asciiArray[x] = "+"
                 last = x
+                start = 0
             else:
                 asciiArray[x] = "x"
+                start = 0
+
+        if start == 8:
+            if asciiArray[x-5] == "+":
+                asciiArray[x-4] = "+"
+                asciiArray[x-3] = "-"
+                asciiArray[x-2] = "_"
+                asciiArray[x-1] = "-"
+                asciiArray[x] = "+"
+            else:
+            asciiArray[x-4] = "-"
+            asciiArray[x-3] = "+"
+            asciiArray[x-2] = "_"
+            asciiArray[x-1] = "+"
+            asciiArray[x] = "-"
+            start = 0
+        
 
     txtSurf, txtRect = text_objects(' | '.join(asciiArray), smallText, (0,0,255))
     txtRect.center = ((400),(400))
