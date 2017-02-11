@@ -400,6 +400,7 @@ def B8ZS():
     global txtbx, asciiArray
     txtarr = list(txtbx)
     asciiArray = list(txtbx)
+    start = 0
     last = -1
 
     for x, (i, j) in enumerate(zip(txtarr, asciiArray)):
@@ -438,18 +439,18 @@ def B8ZS():
                 start = 0
 
         if start == 8:
-            if asciiArray[x-5] == "+":
+            if asciiArray[x-8] == "+":
                 asciiArray[x-4] = "+"
                 asciiArray[x-3] = "-"
                 asciiArray[x-2] = "_"
                 asciiArray[x-1] = "-"
                 asciiArray[x] = "+"
             else:
-            asciiArray[x-4] = "-"
-            asciiArray[x-3] = "+"
-            asciiArray[x-2] = "_"
-            asciiArray[x-1] = "+"
-            asciiArray[x] = "-"
+                asciiArray[x-4] = "-"
+                asciiArray[x-3] = "+"
+                asciiArray[x-2] = "_"
+                asciiArray[x-1] = "+"
+                asciiArray[x] = "-"
             start = 0
         
 
@@ -467,33 +468,71 @@ def HDB3():
     global txtbx, asciiArray
     txtarr = list(txtbx)
     asciiArray = list(txtbx)
+    start = 0
+    substitution = 0
     last = -1
 
     for x, (i, j) in enumerate(zip(txtarr, asciiArray)):
         if x > 0:
             if txtarr[x] == "0":
                 asciiArray[x] = "_"
+                start = start + 1
             elif txtarr[x] == "1" and last == -1:
                 asciiArray[x] = "+"
                 last = x
+                start = 0
             elif txtarr[x] == "1" and last > -1:
                 if asciiArray[last] == "+":
                     asciiArray[x] = "-"
+                    start = 0
                 elif asciiArray[last] == "-":
                     asciiArray[x] = "+"
+                    start = 0
                 else:
                     asciiArray[x] = "x"
+                    start = 0
                 last = x
             else:
                 asciiArray[x] = "x"
+                start = 0
         else:
             if txtarr[x] == "0":
                 asciiArray[x] = "_"
+                start = start + 1
             elif txtarr[x] == "1":
                 asciiArray[x] = "+"
                 last = x
+                start = 0
             else:
                 asciiArray[x] = "x"
+                start = 0
+
+        if start == 4:
+            if asciiArray[x-8] == "+" and substitution % 2 == 0:
+                asciiArray[x-3] = "-"
+                asciiArray[x-2] = "_"
+                asciiArray[x-1] = "_"
+                asciiArray[x] = "-"
+                substitution = substitution + 1
+            elif asciiArray[x-8] == "-" and substitution % 2 == 0:
+                asciiArray[x-3] = "+"
+                asciiArray[x-2] = "_"
+                asciiArray[x-1] = "_"
+                asciiArray[x] = "+"
+                substitution = substitution + 1
+            elif asciiArray[x-8] == "+" and substitution % 2 != 0:
+                asciiArray[x-3] = "_"
+                asciiArray[x-2] = "_"
+                asciiArray[x-1] = "_"
+                asciiArray[x] = "+"
+                substitution = substitution + 1
+            else:
+                asciiArray[x-3] = "_"
+                asciiArray[x-2] = "_"
+                asciiArray[x-1] = "_"
+                asciiArray[x] = "-"
+                substitution = substitution + 1
+            start = 0
 
     txtSurf, txtRect = text_objects(' | '.join(asciiArray), smallText, (0,0,255))
     txtRect.center = ((400),(400))
